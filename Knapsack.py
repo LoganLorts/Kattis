@@ -1,34 +1,44 @@
-def knapSack(weight, wt, val, length): 
-  
-    # Base Case 
-    if length == 0 or weight == 0: 
-        return 0
-    if (storage[length][weight] != 0): 
-        return storage[length][weight]
+def knapSack(W, wt, val, n): 
+    K = [[0] * (W + 1) for x in range(n + 1)]
+ 
+    for i in range(1, n + 1): 
+        for w in range(W + 1): 
+            if i == 0 or w == 0: 
+                K[i][w] = 0
+            elif wt[i-1] <= w: 
+                K[i][w] = max(val[i-1] 
+                            + K[i-1][w-wt[i-1]], 
+                            K[i-1][w]) 
+            else: 
+                K[i][w] = K[i-1][w] 
+    ans = []
+    for i in range(n, 0, -1):
+        if K[i][W] != K[i-1][W]:
+            ans.append(i-1)
+            W -= wt[i-1]
+    return ans
 
+from sys import stdin
+#main
+while True:
+    try:
+        index_array = []
+        unmodified_input = stdin.readline().split()
+        weight = int(unmodified_input[0])
+        weight2 = weight
+        length = int(unmodified_input[1])
+        values = []
+        weights = []
+        for i in range(length):
+            unmodified_input = stdin.readline().split()
+            values.append(int(unmodified_input[0]))
+            weights.append(int(unmodified_input[1]))
 
-    if (wt[length-1] > weight):
-        storage[length][weight] = knapSack(weight, wt, val, length-1)
-        return storage[length][weight]
-    
-    else: 
-        storage[length][weight] = max( 
-            val[length-1] + knapSack( 
-                weight-wt[length-1], wt, val, length-1), 
-            knapSack(weight, wt, val, length-1))
-        return storage[length][weight]
-  
-#main 
-length = int(input())
-weights = input().split()
-values = input().split()
-for i in range(length):
-    weights[i] = int(weights[i])
-for j in range(length):
-    values[j] = int(values[j])
-weight = int(input())
-storage = [[0 for x in range(weight+1)] for y in range(length + 1)]
-(knapSack(weight, weights, values, length))
-column = ([row[-1] for row in storage])
-for i in range(len(column)):
-    print(column[i])
+        ans_arr = knapSack(weight, weights, values, length)
+        ans_arr.sort()
+        print(len(ans_arr))
+        for i in (ans_arr):
+            print(i, end = ' ')
+        print()
+    except:
+        break
